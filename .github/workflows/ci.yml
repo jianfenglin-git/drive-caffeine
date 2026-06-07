@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-test:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Swift version
+        run: swift --version
+
+      # Unit tests run with NO external drive. The real-drive integration suite
+      # is env-gated on DRIVECAFFEINE_TEST_VOLUME and skips cleanly here, so CI
+      # stays green without hardware-in-the-loop.
+      - name: Build
+        run: swift build
+
+      - name: Test (unit only — no hardware)
+        run: swift test

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- App Sandbox ON — this is the whole point of the spike: prove the
+         mechanism works UNDER the sandbox, the way the App Store requires. -->
+    <key>com.apple.security.app-sandbox</key>
+    <true/>
+
+    <!-- The user grants access to a volume via the open panel; this entitlement
+         lets that grant be read-write. Read-only volumes still work for the
+         read path. This is the entitlement App Review will ask about — the
+         justification is "user explicitly selects the drive to keep awake." -->
+    <key>com.apple.security.files.user-selected.read-write</key>
+    <true/>
+
+    <!-- Required so security-scoped bookmarks persist across launches
+         (the reboot/remount-survival half of the spike). -->
+    <key>com.apple.security.files.bookmarks.app-scope</key>
+    <true/>
+</dict>
+</plist>

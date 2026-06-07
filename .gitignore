@@ -1,0 +1,20 @@
+.build/
+build/
+*.xcodeproj
+.DS_Store
+.swiftpm/
+
+# Spike artifacts: keep the source scripts as validation history, but not the
+# generated PNGs, compiled binaries, or built .app bundles.
+spike/**/*.png
+spike/**/build/
+spike/keepalive_write
+spike/**/*.app/
+
+# Generated icon contact sheets / temp montages
+spike/icon/contact*.png
+spike/icon/*-contact.png
+
+# App icon source assets are tracked (Sources/.../Resources/MenuIcon*.png),
+# but the backup dir is local-only.
+Sources/DriveCaffeineApp/Resources/backup-cuponrrive/
