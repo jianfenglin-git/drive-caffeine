@@ -1,7 +1,9 @@
-# DriveCaffeine
+# Drive Caffeine
 
 A tiny, free, open-source macOS menu-bar app that keeps external drives from
 spinning down.
+
+Repo: https://github.com/jianfenglin-git/drive-caffeine
 
 Many external drives have a **firmware idle timer** (in the enclosure's
 JMicron/ASMedia bridge chip) that spins the disk down after a short idle period —
@@ -31,6 +33,8 @@ and tells you immediately if it won't work on that drive.
 Command Line Tools are enough:
 
 ```sh
+git clone https://github.com/jianfenglin-git/drive-caffeine.git
+cd drive-caffeine
 ./build.sh
 open build/DriveCaffeine.app
 ```
