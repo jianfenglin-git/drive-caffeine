@@ -1,0 +1,94 @@
+# XcodeGen spec for Drive Caffeine.
+# Regenerate the .xcodeproj with:  xcodegen generate
+#
+# This produces a real macOS app target that Xcode can ARCHIVE (Product → Archive
+# → Organizer → Distribute) for App Store or notarized direct distribution — which
+# the hand-rolled build.sh (swiftc + ad-hoc sign) cannot do.
+#
+# The app target compiles BOTH the kit and the app sources directly (one target),
+# which is the simplest reliable archive path for a small app. The SwiftPM package
+# (Package.swift) stays the source of truth for `swift test` / CI; this project is
+# purely the distribution wrapper. Both reference the same files under Sources/.
+
+name: DriveCaffeine
+
+options:
+  bundleIdPrefix: com.jianfenglin
+  deploymentTarget:
+    macOS: "13.0"
+  createIntermediateGroups: true
+
+settings:
+  base:
+    MARKETING_VERSION: "1.0.1"
+    CURRENT_PROJECT_VERSION: "6"
+    SWIFT_VERSION: "5.9"
+    DEVELOPMENT_TEAM: "MA5JSLK6AZ"   # Jianfeng Lin — Apple Distribution team
+    CODE_SIGN_STYLE: Automatic
+    # Disable Xcode's "debug dylib" indirection. Without this, a Release archive
+    # leaves Contents/MacOS/<app> as an unsigned launcher stub ("code object is
+    # not signed at all"), breaking manual distribution signing. Off = a normal
+    # single signed executable, which is what a shipped app should be.
+    ENABLE_DEBUG_DYLIB: NO
+
+targets:
+  # Framework mirrors the SwiftPM DriveCaffeineKit module, so `import
+  # DriveCaffeineKit` resolves in the app exactly like it does under `swift test`.
+  DriveCaffeineKit:
+    type: framework
+    platform: macOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jianfenglin.drivecaffeine.kit
+        PRODUCT_NAME: DriveCaffeineKit
+        ENABLE_HARDENED_RUNTIME: YES
+        GENERATE_INFOPLIST_FILE: YES
+        # Frameworks CANNOT take a provisioning profile — only the app does.
+        # Sign with the distribution cert but no profile (automatic style here
+        # just means "no manual profile"); the embedded framework inherits the
+        # app's App Store distribution at archive time.
+        CODE_SIGN_STYLE: Manual
+        PROVISIONING_PROFILE_SPECIFIER: ""
+        CODE_SIGN_IDENTITY: "Apple Distribution: Jianfeng Lin (MA5JSLK6AZ)"
+    sources:
+      - path: Sources/DriveCaffeineKit
+
+  Drive Caffeine:
+    type: application
+    platform: macOS
+    dependencies:
+      - target: DriveCaffeineKit
+        embed: true            # bundle the framework inside the .app
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.jianfenglin.drivecaffeine
+        PRODUCT_NAME: "Drive Caffeine"
+        INFOPLIST_FILE: Info.plist
+        # Drive actool from the .icon bundle in sources → Assets.car.
+        ASSETCATALOG_COMPILER_APPICON_NAME: DriveCaffeine
+        CODE_SIGN_ENTITLEMENTS: DriveCaffeine.entitlements
+        ENABLE_HARDENED_RUNTIME: YES             # required for notarization
+        LSUIElement: YES                         # menu-bar only (also in Info.plist)
+        # App Store distribution signing (the profile applies to the app only).
+        CODE_SIGN_STYLE: Manual
+        PROVISIONING_PROFILE_SPECIFIER: "Drive Caffeine"
+        CODE_SIGN_IDENTITY: "Apple Distribution: Jianfeng Lin (MA5JSLK6AZ)"
+    sources:
+      - path: Sources/DriveCaffeineApp
+        excludes:
+          - "Resources/**"
+      # App icon: Icon Composer .icon bundle. Xcode's actool compiles it into
+      # Assets.car (+ a fallback .icns) with the macOS rounded-rect shape and
+      # transparent corners baked in — macOS does NOT mask icons at display
+      # time (unlike iOS), so a flat full-bleed square shows hard corners in
+      # Dock/Launchpad. Info.plist sets BOTH CFBundleIconName (macOS 13+ reads
+      # Assets.car) and CFBundleIconFile (fallback) to "DriveCaffeine".
+      - path: Sources/DriveCaffeineApp/Resources/DriveCaffeine.icon
+      # Menu-bar icon (template PNGs). MenuIcon@2x/@3x are loaded by filename at
+      # runtime (AppIcon.image); Xcode combines them into MenuIcon.tiff.
+      - path: Sources/DriveCaffeineApp/Resources/MenuIcon.png
+        buildPhase: resources
+      - path: Sources/DriveCaffeineApp/Resources/MenuIcon@2x.png
+        buildPhase: resources
+      - path: Sources/DriveCaffeineApp/Resources/MenuIcon@3x.png
+        buildPhase: resources

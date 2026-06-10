@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drive Caffeine — Support</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    max-width: 720px; margin: 0 auto; padding: 48px 24px;
+    color: #1a1a1a; background: #fff;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { color: #e0e0e0; background: #16181c; }
+    a { color: #6ea8ff; }
+    .faq { border-color: #333; }
+    code { background: #20242b; }
+  }
+  h1 { font-size: 28px; margin-bottom: 4px; }
+  .tagline { color: #888; font-size: 15px; margin-top: 0; }
+  h2 { font-size: 19px; margin-top: 36px; }
+  h3 { font-size: 16px; margin-bottom: 4px; }
+  a { color: #0066cc; }
+  code {
+    background: #f5f7fa; border-radius: 4px; padding: 1px 5px;
+    font: 14px ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .faq { border-top: 1px solid #e3e7ec; padding-top: 18px; margin-top: 18px; }
+  ul { padding-left: 22px; }
+  li { margin: 6px 0; }
+  footer { margin-top: 48px; font-size: 14px; color: #888; border-top: 1px solid #e3e7ec; padding-top: 16px; }
+  @media (prefers-color-scheme: dark) { footer, .faq { border-color: #333; } }
+</style>
+</head>
+<body>
+
+<h1>Drive Caffeine — Support</h1>
+<p class="tagline">Keep your external drive awake on macOS.</p>
+
+<h2>Getting started</h2>
+<ol>
+  <li>Click the Drive Caffeine icon in your menu bar.</li>
+  <li>Click <strong>Add Drive…</strong> and pick your external drive.</li>
+  <li>Leave <strong>Read</strong> checked (the default). The drive now stays awake.</li>
+</ol>
+
+<h2>Frequently asked questions</h2>
+
+<div class="faq">
+  <h3>My drive still spins down. What do I do?</h3>
+  <ul>
+    <li><strong>Lower the interval.</strong> Some drives sleep faster than 30&nbsp;seconds.
+        Drag the slider down (e.g. to 10&nbsp;seconds) so the keep-alive fires more often.</li>
+    <li><strong>Enable Write.</strong> A few drives reset their idle timer only on
+        writes, not reads. Check the <strong>Write</strong> box for that drive.</li>
+  </ul>
+</div>
+
+<div class="faq">
+  <h3>What's the difference between Read and Write?</h3>
+  <p>
+    <strong>Read</strong> (default) gently reads a small piece of a file on the
+    drive — no wear, and it works even on read-only drives like Plex media shares
+    or Time Machine volumes. <strong>Write</strong> writes a tiny hidden marker
+    file. Use Write only if Read doesn't keep your particular drive awake.
+  </p>
+</div>
+
+<div class="faq">
+  <h3>It says “read-only — no readable file found.”</h3>
+  <p>
+    Read mode needs at least one file on the drive to read. If the drive is empty
+    and read-only, there's nothing to read — add a file, or use a writable drive.
+  </p>
+</div>
+
+<div class="faq">
+  <h3>What is the <code>.drivecaffeine_keepalive</code> file on my drive?</h3>
+  <p>
+    That's the tiny hidden marker Write mode uses. It's a few bytes, never grows,
+    and is safe to delete (the app recreates it if needed). It only appears when
+    Write mode is enabled.
+  </p>
+</div>
+
+<div class="faq">
+  <h3>The app disappeared / there's no Dock icon.</h3>
+  <p>
+    That's by design — Drive Caffeine lives only in the menu bar, not the Dock.
+    Look for its icon near the clock at the top-right of your screen.
+  </p>
+</div>
+
+<div class="faq">
+  <h3>Does it keep my Mac awake too?</h3>
+  <p>
+    No. It only keeps the <em>drive</em> awake while your Mac is on. When your Mac
+    sleeps, Drive Caffeine pauses and lets the drive sleep too.
+  </p>
+</div>
+
+<div class="faq">
+  <h3>Does it collect any data?</h3>
+  <p>
+    No. Nothing is collected or sent anywhere. See the
+    <a href="privacy.html">Privacy Policy</a>.
+  </p>
+</div>
+
+<h2>Still stuck?</h2>
+<p>
+  Open an issue and we'll help:
+  <a href="https://github.com/jianfenglin-git/drive-caffeine/issues">github.com/jianfenglin-git/drive-caffeine/issues</a>
+  <!-- TODO: add a support email here before submission if you want a non-GitHub
+       contact channel. -->
+</p>
+
+<footer>
+  Drive Caffeine is free and open source.
+  <a href="https://github.com/jianfenglin-git/drive-caffeine">github.com/jianfenglin-git/drive-caffeine</a>
+  · <a href="privacy.html">Privacy Policy</a>
+</footer>
+
+</body>
+</html>

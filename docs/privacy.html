@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drive Caffeine — Privacy Policy</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    max-width: 720px; margin: 0 auto; padding: 48px 24px;
+    color: #1a1a1a; background: #fff;
+  }
+  @media (prefers-color-scheme: dark) {
+    body { color: #e0e0e0; background: #16181c; }
+    a { color: #6ea8ff; }
+    .note { background: #20242b; border-color: #333; }
+  }
+  h1 { font-size: 28px; margin-bottom: 4px; }
+  h2 { font-size: 19px; margin-top: 36px; }
+  .updated { color: #888; font-size: 14px; margin-top: 0; }
+  a { color: #0066cc; }
+  .note {
+    background: #f5f7fa; border: 1px solid #e3e7ec; border-radius: 8px;
+    padding: 14px 18px; margin: 20px 0;
+  }
+  ul { padding-left: 22px; }
+  li { margin: 6px 0; }
+  footer { margin-top: 48px; font-size: 14px; color: #888; border-top: 1px solid #e3e7ec; padding-top: 16px; }
+  @media (prefers-color-scheme: dark) { footer { border-color: #333; } }
+</style>
+</head>
+<body>
+
+<h1>Drive Caffeine — Privacy Policy</h1>
+<p class="updated">Last updated: June 7, 2026</p>
+
+<div class="note">
+  <strong>Short version:</strong> Drive Caffeine collects nothing, sends nothing,
+  and has no servers, accounts, analytics, or tracking. Everything it does happens
+  on your Mac.
+</div>
+
+<h2>What the app does</h2>
+<p>
+  Drive Caffeine is a macOS menu-bar utility that keeps external drives from
+  spinning down. It periodically reads (or, optionally, writes) a small amount of
+  data to a drive you explicitly choose, so the drive's firmware idle timer never
+  fires. That is its only function.
+</p>
+
+<h2>Data we collect</h2>
+<p>
+  <strong>None.</strong> Drive Caffeine does not collect, transmit, sell, or share
+  any personal information. There is no account to create, no telemetry, no
+  analytics SDK, and no advertising.
+</p>
+
+<h2>Network access</h2>
+<p>
+  Drive Caffeine makes <strong>no network connections of any kind</strong>. It
+  does not contact us or any third party. Your information cannot leave your Mac
+  because the app never sends anything off it.
+</p>
+
+<h2>What stays on your device</h2>
+<p>
+  To do its job, the app stores a few things locally, inside its own sandboxed
+  container on your Mac. None of this is transmitted anywhere:
+</p>
+<ul>
+  <li>
+    <strong>Drive access permissions.</strong> When you add a drive, macOS asks
+    you to grant access via a file picker. The app saves a
+    “security-scoped bookmark” so it can reach that same drive after a restart.
+    This is a standard macOS mechanism and is stored only in the app's local
+    settings.
+  </li>
+  <li>
+    <strong>Your preferences.</strong> Which drives you added, the read/write
+    mode, and the interval — stored locally so your setup persists.
+  </li>
+  <li>
+    <strong>A keep-alive marker file.</strong> On writable drives, the app may
+    create a small hidden file named <code>.drivecaffeine_keepalive</code> at the
+    drive's root and write a few bytes to it on a timer. It never grows and
+    contains no personal data.
+  </li>
+  <li>
+    <strong>Diagnostic logs.</strong> The app writes activity messages to the
+    macOS unified log (Console) for troubleshooting. These stay on your Mac and
+    are never uploaded.
+  </li>
+</ul>
+
+<h2>Files the app reads</h2>
+<p>
+  In Read mode, the app reads a small portion (the first 64&nbsp;KB) of an existing
+  file on the drive you selected, solely to generate disk activity. It does not
+  inspect, copy, transmit, or store the contents of your files.
+</p>
+
+<h2>Children's privacy</h2>
+<p>
+  Drive Caffeine is a utility with no data collection and is suitable for all
+  ages. It collects no information from anyone, including children.
+</p>
+
+<h2>Changes to this policy</h2>
+<p>
+  If this policy ever changes, the updated version will be posted at this page
+  with a new “Last updated” date.
+</p>
+
+<h2>Contact</h2>
+<p>
+  Questions about privacy? Open an issue at
+  <a href="https://github.com/jianfenglin-git/drive-caffeine/issues">the project's GitHub page</a>
+  <!-- TODO: add a contact email here before App Store submission if you want a
+       non-GitHub channel. Apple accepts a support URL; an email is optional. -->
+</p>
+
+<footer>
+  Drive Caffeine is free and open source.
+  <a href="https://github.com/jianfenglin-git/drive-caffeine">github.com/jianfenglin-git/drive-caffeine</a>
+</footer>
+
+</body>
+</html>
