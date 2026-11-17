@@ -27,15 +27,17 @@ command every interval:
 Pick per drive; at least one must be on. Toggling a mode runs a real test first
 and tells you immediately if it won't work on that drive.
 
-## Build & run (no Xcode needed)
+## Build & run
 
-Command Line Tools are enough:
+Command Line Tools are enough to build. If Xcode is installed, `build.sh` also
+uses its `actool` to compile the app icon (`DriveCaffeine.icon`); without it,
+the app builds without its app icon.
 
 ```sh
 git clone https://github.com/jianfenglin-git/drive-caffeine.git
 cd drive-caffeine
 ./build.sh
-open build/Drive Caffeine.app
+open "build/Drive Caffeine.app"
 ```
 
 A menu-bar icon appears (no Dock icon). Click it → **Add Drive…** → pick your

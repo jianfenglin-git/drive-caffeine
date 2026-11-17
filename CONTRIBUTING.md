@@ -7,7 +7,8 @@ macOS releases.
 ## Setup
 
 You need macOS 13+ and the Xcode **Command Line Tools** (`xcode-select --install`).
-Full Xcode is only needed to submit to the App Store, not to build or test.
+Full Xcode is only needed to compile the app icon (`build.sh` uses its `actool`
+when installed) and to submit to the App Store, not to build or test.
 
 ```sh
 swift build      # build the package
