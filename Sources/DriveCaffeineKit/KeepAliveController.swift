@@ -16,8 +16,19 @@ public final class KeepAliveController: ObservableObject {
     private var activeAccessURLs: [String: URL] = [:]      // security-scoped, started
     private var activityToken: (any NSObjectProtocol)?      // App Nap defense
 
-    public init(store: BookmarkStore = BookmarkStore()) {
+    /// Starts security-scoped access on a URL. Injectable so tests can model the
+    /// sandbox rule that matters here: only URLs from a resolved bookmark or the
+    /// open panel carry a scope. A plain URL (e.g. from a mount notification)
+    /// returns false under App Sandbox, even for a drive we have a bookmark for.
+    private let startScopedAccess: (URL) -> Bool
+
+    public convenience init(store: BookmarkStore = BookmarkStore()) {
+        self.init(store: store, startScopedAccess: { $0.startAccessingSecurityScopedResource() })
+    }
+
+    init(store: BookmarkStore, startScopedAccess: @escaping (URL) -> Bool) {
         self.store = store
+        self.startScopedAccess = startScopedAccess
         loadPersisted()
         installLifecycleObservers()
     }
@@ -190,6 +201,13 @@ public final class KeepAliveController: ObservableObject {
         guard let idx = volumes.firstIndex(where: { $0.id == key }),
               let url = activeAccessURLs[key] else { return }
         let settings = volumes[idx].settings
+        // Both modes off = the user chose to let this drive sleep. Don't start a
+        // no-op runner that would report "Active — keeping awake via " (nothing).
+        guard settings.modes.isActive else {
+            runners[key]?.stop()
+            setStatus(key: key, .disabled)
+            return
+        }
         let writable = isWritable(url)
 
         let runner = runners[key] ?? PerVolumeRunner(label: key)
@@ -258,7 +276,7 @@ public final class KeepAliveController: ObservableObject {
 
     private func beginAccess(key: String, url: URL) {
         #if canImport(AppKit)
-        if activeAccessURLs[key] == nil, url.startAccessingSecurityScopedResource() {
+        if activeAccessURLs[key] == nil, startScopedAccess(url) {
             activeAccessURLs[key] = url
         }
         #else
@@ -291,26 +309,49 @@ public final class KeepAliveController: ObservableObject {
 
     #if canImport(AppKit)
     @objc private func onMount(_ note: Notification) {
-        guard let url = note.userInfo?[NSWorkspace.volumeURLUserInfoKey] as? URL,
-              let identity = VolumeIdentity.resolve(from: url) else { return }
-        let key = identity.storageKey
-        // Only re-arm volumes we already know about.
-        if volumes.contains(where: { $0.id == key }) {
-            beginAccess(key: key, url: url)
-            updateStatus(key: key, mountURL: url)
-            arm(key: key)
-        }
+        guard let url = note.userInfo?[NSWorkspace.volumeURLUserInfoKey] as? URL else { return }
+        handleMount(url: url)
     }
 
     @objc private func onUnmount(_ note: Notification) {
         guard let url = note.userInfo?[NSWorkspace.volumeURLUserInfoKey] as? URL else { return }
-        // Match by mount URL among known volumes.
-        for v in volumes where v.mountURL == url {
+        handleUnmount(url: url)
+    }
+    #endif
+
+    /// A volume appeared. If it's one we know, re-arm it.
+    ///
+    /// The notification's URL is only used to IDENTIFY the drive — never for
+    /// access. Under App Sandbox it carries no security scope, so starting
+    /// access on it fails, arm() bails, and the drive sits at "Not connected"
+    /// (toggles dead) until relaunch. Instead re-resolve the stored bookmark,
+    /// exactly as launch does, which yields a URL that carries the grant.
+    func handleMount(url: URL) {
+        guard let identity = VolumeIdentity.resolve(from: url) else { return }
+        let key = identity.storageKey
+        guard volumes.contains(where: { $0.id == key }) else { return }
+        // Drop anything still tied to the previous mount (e.g. if the unmount
+        // was missed, or a poke saw the drive vanish first) so beginAccess
+        // takes the fresh grant instead of no-op'ing on a dead one.
+        runners[key]?.stop()
+        endAccess(key: key)
+        resumeIfMounted(key: key)
+    }
+
+    /// A volume went away. Match by PATH, not URL equality: URL `==` compares
+    /// the string, so `file:///Volumes/X/` != `file:///Volumes/X`, and a
+    /// missed match left the runner poking a vanished path.
+    func handleUnmount(url: URL) {
+        let gone = url.standardizedFileURL.path
+        for v in volumes where v.mountURL?.standardizedFileURL.path == gone {
             runners[v.id]?.stop()
             endAccess(key: v.id)
+            updateStatus(key: v.id, mountURL: nil)
             setStatus(key: v.id, .unmounted)
         }
     }
+
+    #if canImport(AppKit)
 
     @objc private func onSleep(_ note: Notification) {
         // Suspend all timers — no point poking while the Mac sleeps, and we
